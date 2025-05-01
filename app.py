@@ -38,5 +38,7 @@ def upload():
                            filename=filename, url=url)
 
 if __name__ == '__main__':
-    # bind to all interfaces on port 80
     app.run(host='0.0.0.0', port=80)
+            app.run(host='0.0.0.0', port=5000)
+
+
