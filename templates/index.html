@@ -1,17 +1,4 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-  <meta charset="UTF-8">
-  <title>Upload a File</title>
-  <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
-</head>
-<body>
-  <div class="container">
-    <h1>📤 Upload a File</h1>
-    <form action="/upload" method="post" enctype="multipart/form-data">
-      <input type="file" name="file" required>
-      <button type="submit">Upload</button>
-    </form>
-  </div>
-</body>
-</html>
+<form method="POST" action="/upload" enctype="multipart/form-data">
+  <input type="file" name="file" accept=".pdf,.jpg,.png,.txt">
+  <button type="submit">Upload</button>
+</form>
