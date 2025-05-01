@@ -20,5 +20,5 @@ def upload():
         return f'Download Link: <a href="{url}">{url}</a>'
     return 'Upload failed!'
 
-if __name__ == '__main__':
-    app.run(host='0.0.0.0', port=80)
+if __name__ == "__main__":
+    app.run(host="0.0.0.0", port=5000)
