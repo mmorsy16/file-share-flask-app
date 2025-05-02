@@ -1,10 +1,17 @@
 import boto3
+from botocore.client import Config         
 from flask import Flask, render_template, request, redirect, url_for
 from werkzeug.utils import secure_filename
 
-app = Flask(__name__)  # by default: templates/ & static/
+app = Flask(__name__)
 
-s3 = boto3.client('s3')         # picks up instance role
+
+s3 = boto3.client(
+    's3',
+    region_name='eu-west-2',
+    config=Config(signature_version='s3v4')   
+)
+
 BUCKET = 'my-file-sharing-bucket-2025'
 
 @app.route('/')
@@ -26,7 +33,6 @@ def upload():
 @app.route('/files')
 def files():
     resp = s3.list_objects_v2(Bucket=BUCKET)
-    # build list of {name, url}
     files = []
     for obj in resp.get('Contents', []):
         key = obj['Key']
