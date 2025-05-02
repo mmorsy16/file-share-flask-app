@@ -1,13 +1,10 @@
 import boto3
-from flask import Flask, render_template, request
+from flask import Flask, render_template, request, redirect, url_for
 from werkzeug.utils import secure_filename
 
-app = Flask(__name__)
+app = Flask(__name__)  # by default: templates/ & static/
 
-# Force boto3 to use the instance role
-session = boto3.Session()
-s3 = session.client('s3')
-
+s3 = boto3.client('s3')         # picks up instance role
 BUCKET = 'my-file-sharing-bucket-2025'
 
 @app.route('/')
@@ -16,16 +13,30 @@ def home():
 
 @app.route('/upload', methods=['POST'])
 def upload():
+    file = request.files.get('file')
+    if not file or file.filename == '':
+        return redirect(url_for('home'))
+    filename = secure_filename(file.filename)
     try:
-        file = request.files['file']
-        if file:
-            filename = secure_filename(file.filename)
-            s3.upload_fileobj(file, BUCKET, filename)
-            url = s3.generate_presigned_url('get_object', Params={'Bucket': BUCKET, 'Key': filename}, ExpiresIn=3600)
-            return f'Download Link: <a href="{url}">{url}</a>'
-        return 'No file found!'
+        s3.upload_fileobj(file, BUCKET, filename)
     except Exception as e:
-        return f'❌ Error: {str(e)}', 500
+        return f"❌ Upload failed: {e}", 500
+    return redirect(url_for('files'))
 
-if __name__ == "__main__":
-    app.run(host="0.0.0.0", port=5000)
+@app.route('/files')
+def files():
+    resp = s3.list_objects_v2(Bucket=BUCKET)
+    # build list of {name, url}
+    files = []
+    for obj in resp.get('Contents', []):
+        key = obj['Key']
+        url = s3.generate_presigned_url(
+            'get_object',
+            Params={'Bucket': BUCKET, 'Key': key},
+            ExpiresIn=3600
+        )
+        files.append({'name': key, 'url': url})
+    return render_template('files.html', files=files)
+
+if __name__ == '__main__':
+    app.run(host='0.0.0.0', port=5000)
