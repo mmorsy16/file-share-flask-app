@@ -70,6 +70,7 @@ body {
   .file-item p {
     font-weight: 600;
     margin-bottom: 10px;
+    color: #333;
   }
   
   .file-item img {
