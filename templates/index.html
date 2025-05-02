@@ -1,4 +1,19 @@
-<form method="POST" action="/upload" enctype="multipart/form-data">
-  <input type="file" name="file" accept=".pdf,.jpg,.png,.txt">
-  <button type="submit">Upload</button>
-</form>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Upload File</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+  <div class="container">
+    <h1>Upload Your File</h1>
+    <form action="{{ url_for('upload') }}" method="post" enctype="multipart/form-data">
+      <input type="file" name="file" required>
+      <button type="submit">Submit</button>
+    </form>
+    <a href="{{ url_for('files') }}" class="view-files-button">View My Files</a>
+  </div>
+</body>
+</html>
